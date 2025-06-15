@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -101,7 +100,13 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
                       value={value}
                       onChange={(e) => {
                         const newTasks = [...taskList];
-                        newTasks[index].parameters[key] = Number(e.target.value);
+                        newTasks[index] = {
+                          ...newTasks[index],
+                          parameters: {
+                            ...newTasks[index].parameters,
+                            [key]: Number(e.target.value)
+                          }
+                        };
                         setTaskList(newTasks);
                       }}
                     />
