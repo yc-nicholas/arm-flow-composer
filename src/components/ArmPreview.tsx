@@ -122,8 +122,16 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
                 cx={150 + currentPosition.x}
                 cy={150 - currentPosition.y}
                 r="6"
-                fill="magenta"
+                fill={`rgb(255, ${255 - currentPosition.z * 2}, ${255 - currentPosition.z * 2})`}
               />
+              <text
+                x={150 + currentPosition.x + 10}
+                y={150 - currentPosition.y}
+                fontSize="10"
+                fill="white"
+              >
+                Z: {currentPosition.z}
+              </text>
             </>
           )}
         </svg>
