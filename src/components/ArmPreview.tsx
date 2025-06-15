@@ -24,8 +24,8 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
   return (
     <div className="space-y-4">
       {/* Preview Area */}
-      <Card className="p-2 bg-black text-white min-h-[300px]">
-        <Canvas camera={{ position: [5, 5, 5] }}>
+      <Card className="p-2 bg-black text-white h-[400px]">
+        <Canvas camera={{ position: [5, 5, 5] }} style={{ height: '100%' }}>
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
           <primitive object={new THREE.GridHelper(10, 10)} />
