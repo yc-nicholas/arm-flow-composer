@@ -16,8 +16,8 @@ const BuilderPage = () => {
     {
       id: '1',
       type: 'move',
-      parameters: { x: 100, y: 50, z: 20 },
-      description: 'Move to position (100, 50, 20)'
+      parameters: { x: 1, y: 3, z: 2 },
+      description: 'Move to position (1, 3, 2)'
     },
     {
       id: '2',
