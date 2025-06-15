@@ -9,17 +9,38 @@ interface ArmPreviewProps {
 }
 
 const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
+  const latestMove = React.useMemo(() => {
+    const last = [...taskList]
+      .reverse()
+      .find((task) => task.type.toLowerCase() === "move");
+    if (!last) return null;
+    return last.parameters;
+  }, [taskList]);
   return (
     <div className="space-y-4">
       {/* Preview Area */}
       <Card className="p-8 bg-gray-900 text-white min-h-[300px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🦾</div>
-          <h3 className="text-xl font-semibold mb-2">[2D Arm Preview Coming Soon]</h3>
-          <p className="text-gray-400 text-sm">
-            Interactive arm simulation will be displayed here
-          </p>
-        </div>
+        <svg width="300" height="300" viewBox="0 0 300 300">
+          <circle cx="150" cy="150" r="4" fill="white" />
+          {latestMove && (
+            <>
+              <line
+                x1="150"
+                y1="150"
+                x2={150 + latestMove.x}
+                y2={150 - latestMove.y}
+                stroke="cyan"
+                strokeWidth="4"
+              />
+              <circle
+                cx={150 + latestMove.x}
+                cy={150 - latestMove.y}
+                r="6"
+                fill="magenta"
+              />
+            </>
+          )}
+        </svg>
       </Card>
 
       {/* Task Execution Status */}
