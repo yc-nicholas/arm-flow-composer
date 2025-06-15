@@ -12,23 +12,66 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [currentPosition, setCurrentPosition] = React.useState({ x: 0, y: 0, z: 0 });
 
+  // Type guard for move tasks
+  const isMoveTask = (task: Task): task is Task & { parameters: { x: number; y: number; z: number } } => {
+    return (
+      task.type === "move" &&
+      typeof task.parameters?.x === "number" &&
+      typeof task.parameters?.y === "number" &&
+      typeof task.parameters?.z === "number"
+    );
+  };
+
   const playTasks = () => {
     if (!taskList.length) return;
     setIsPlaying(true);
     let index = 0;
-    const interval = setInterval(() => {
+
+    const animateMove = (from: { x: number; y: number; z: number }, to: { x: number; y: number; z: number }, duration: number, onComplete: () => void) => {
+      const start = performance.now();
+
+      const animate = (time: number) => {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const newPos = {
+          x: from.x + (to.x - from.x) * progress,
+          y: from.y + (to.y - from.y) * progress,
+          z: from.z + (to.z - from.z) * progress,
+        };
+        setCurrentPosition(newPos);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          onComplete();
+        }
+      };
+
+      requestAnimationFrame(animate);
+    };
+
+    const runNextTask = () => {
       if (index >= taskList.length) {
-        clearInterval(interval);
         setIsPlaying(false);
         return;
       }
+
       const task = taskList[index];
-      if (task.type === "move") {
-        setCurrentPosition(task.parameters);
-      }
       setCurrentIndex(index);
-      index++;
-    }, 1000);
+
+      if (isMoveTask(task)) {
+        animateMove(currentPosition, task.parameters, 1000, () => {
+          setCurrentPosition(task.parameters);
+          index++;
+          setTimeout(runNextTask, 200);
+        });
+      } else {
+        index++;
+        setTimeout(runNextTask, 1000);
+      }
+    };
+
+    runNextTask();
   };
 
   const resetPreview = () => {
