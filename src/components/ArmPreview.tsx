@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Task } from '../pages/BuilderPage';
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,35 @@ interface ArmPreviewProps {
 }
 
 const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [currentPosition, setCurrentPosition] = React.useState({ x: 0, y: 0, z: 0 });
+
+  const playTasks = () => {
+    if (!taskList.length) return;
+    setIsPlaying(true);
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index >= taskList.length) {
+        clearInterval(interval);
+        setIsPlaying(false);
+        return;
+      }
+      const task = taskList[index];
+      if (task.type === "move") {
+        setCurrentPosition(task.parameters);
+      }
+      setCurrentIndex(index);
+      index++;
+    }, 1000);
+  };
+
+  const resetPreview = () => {
+    setIsPlaying(false);
+    setCurrentIndex(0);
+    setCurrentPosition({ x: 0, y: 0, z: 0 });
+  };
+
   const latestMove = React.useMemo(() => {
     const last = [...taskList]
       .reverse()
@@ -19,22 +47,37 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
   return (
     <div className="space-y-4">
       {/* Preview Area */}
-      <Card className="p-8 bg-gray-900 text-white min-h-[300px] flex items-center justify-center">
+      <Card className="p-8 bg-gray-900 text-white min-h-[300px] flex flex-col items-center justify-center">
+        <div className="flex space-x-4 mb-2">
+          <button
+            onClick={playTasks}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={isPlaying}
+          >
+            Play
+          </button>
+          <button
+            onClick={resetPreview}
+            className="px-4 py-2 bg-gray-500 text-white rounded"
+          >
+            Reset
+          </button>
+        </div>
         <svg width="300" height="300" viewBox="0 0 300 300">
           <circle cx="150" cy="150" r="4" fill="white" />
-          {latestMove && (
+          {currentIndex !== null && (
             <>
               <line
                 x1="150"
                 y1="150"
-                x2={150 + latestMove.x}
-                y2={150 - latestMove.y}
+                x2={150 + currentPosition.x}
+                y2={150 - currentPosition.y}
                 stroke="cyan"
                 strokeWidth="4"
               />
               <circle
-                cx={150 + latestMove.x}
-                cy={150 - latestMove.y}
+                cx={150 + currentPosition.x}
+                cy={150 - currentPosition.y}
                 r="6"
                 fill="magenta"
               />
