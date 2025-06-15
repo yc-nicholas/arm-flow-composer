@@ -1,73 +1,97 @@
-# Welcome to your Lovable project
+# Project: arm-flow-composer
 
-## Project info
+A browser-based no-code application to configure and simulate robotic arm tasks. Users can drag-and-drop motion blocks (e.g. MoveTo, Pick, Place), edit parameters, preview actions in 2D, and export to a robot-readable JSON format. The goal is to demonstrate clean architecture, UI/UX thinking, and robotics domain awareness without relying on ROS or hardware.
 
-**URL**: https://lovable.dev/projects/a6974b66-52b8-4b0c-b544-7c4605b5be5e
+---
 
-## How can I edit this code?
+## Frontend (React + Blockly + SVG)
 
-There are several ways of editing your application.
+### Features
+- Drag-and-drop task block builder (Blockly)
+- Configurable parameters: x/y/z, grip force, duration
+- Animated 2D robotic arm preview using SVG or Canvas
+- Buttons: "Run Simulation", "Export JSON", "Import JSON"
+- Form validation and error feedback (e.g. unreachable position)
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/a6974b66-52b8-4b0c-b544-7c4605b5be5e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Structure
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── ArmPreview.tsx
+│   │   ├── TaskBlockEditor.tsx
+│   │   └── ExportModal.tsx
+│   ├── views/
+│   │   └── BuilderPage.tsx
+│   └── App.tsx
+├── public/
+└── vite.config.ts
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Backend (FastAPI)
 
-**Use GitHub Codespaces**
+### Endpoints
+- `POST /simulate` — Accepts JSON task list, returns simulated steps
+- `POST /export` — Saves task list to server (optional)
+- `GET /example_task` — Returns example or template task
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Structure
+```
+backend/
+├── main.py
+├── api/
+│   ├── simulate.py
+│   └── models.py
+├── services/
+│   └── simulator.py
+├── tests/
+└── Dockerfile
+```
 
-## What technologies are used for this project?
+### Practices
+- SOLID service separation
+- Pydantic v2 for schema validation
+- GitHub Actions CI for test + lint
+- Pre-commit: black, isort, ruff
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## DevOps / Integration
 
-## How can I deploy this project?
+- `docker-compose.yml` to run frontend + backend
+- Linting and test workflow in `.github/workflows/`
+- VS Code devcontainer config (optional)
 
-Simply open [Lovable](https://lovable.dev/projects/a6974b66-52b8-4b0c-b544-7c4605b5be5e) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## Example JSON Format (export)
+```json
+[
+  { "action": "MoveTo", "x": 0.2, "y": 0.1, "z": 0.3 },
+  { "action": "Pick", "grip": 40 },
+  { "action": "MoveTo", "x": 0.1, "y": 0.1, "z": 0.4 },
+  { "action": "Place", "release": true }
+]
+```
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Tech Stack Summary
+- **Frontend**: React, TypeScript, Blockly, SVG, Tailwind or MUI
+- **Backend**: FastAPI, Pydantic v2, Docker
+- **DevOps**: Docker Compose, GitHub Actions, Pre-commit
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## Future Enhancements (Optional)
+- ROS/URScript export option
+- Task validation engine
+- 3D preview using Three.js
+- Collaborative real-time editing (WebSocket)
+
+---
+
+## README Callout
+> This project simulates a no-code robotics programming interface for arm manipulators. It demonstrates clean software architecture, thoughtful UI/UX, and domain-aware abstraction for robotic task design.
