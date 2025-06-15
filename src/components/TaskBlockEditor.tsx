@@ -36,7 +36,7 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
     const newTask: Task = {
       id: Date.now().toString(),
       type,
-      parameters: defaultParameters[type],
+      parameters: { ...defaultParameters[type] },
       description
     };
     setTaskList([...taskList, newTask]);
@@ -81,13 +81,15 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
       <Card
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
         className={`p-4 ${taskTypeColors[task.type as keyof typeof taskTypeColors] || 'bg-gray-100 border-gray-300'}`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <GripVertical className="h-5 w-5 text-gray-400 cursor-move" />
+            <GripVertical
+              className="h-5 w-5 text-gray-400 cursor-move"
+              {...attributes}
+              {...listeners}
+            />
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-mono bg-white px-2 py-1 rounded">
@@ -138,7 +140,10 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => removeTask(task.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              removeTask(task.id);
+            }}
             className="text-red-600 hover:text-red-800 hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4" />
