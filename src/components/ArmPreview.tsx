@@ -1,25 +1,41 @@
-
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Task } from '../pages/BuilderPage';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import * as THREE from 'three';
 
 interface ArmPreviewProps {
   taskList: Task[];
 }
 
 const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
+  const [selectedPosition, setSelectedPosition] = useState<[number, number, number]>([0, 0, 0]);
+
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.position.set(...selectedPosition);
+    }
+  }, [selectedPosition]);
+
   return (
     <div className="space-y-4">
       {/* Preview Area */}
-      <Card className="p-8 bg-gray-900 text-white min-h-[300px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🦾</div>
-          <h3 className="text-xl font-semibold mb-2">[2D Arm Preview Coming Soon]</h3>
-          <p className="text-gray-400 text-sm">
-            Interactive arm simulation will be displayed here
-          </p>
-        </div>
+      <Card className="p-2 bg-black text-white min-h-[300px]">
+        <Canvas camera={{ position: [5, 5, 5] }}>
+          <ambientLight />
+          <pointLight position={[10, 10, 10]} />
+          <primitive object={new THREE.GridHelper(10, 10)} />
+          <primitive object={new THREE.AxesHelper(5)} />
+          <mesh ref={meshRef}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="orange" />
+          </mesh>
+          <OrbitControls />
+        </Canvas>
       </Card>
 
       {/* Task Execution Status */}
@@ -30,7 +46,16 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
         ) : (
           <div className="space-y-2">
             {taskList.map((task, index) => (
-              <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+              <div
+                key={task.id}
+                onClick={() => {
+                  if (task.type === 'move' && task.parameters) {
+                    const { x, y, z } = task.parameters;
+                    setSelectedPosition([x || 0, y || 0, z || 0]);
+                  }
+                }}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition"
+              >
                 <div className="flex items-center space-x-3">
                   <Badge variant="outline" className="text-xs">
                     Step {index + 1}
@@ -54,7 +79,7 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
           <div>
             <span className="text-gray-500">Position:</span>
             <div className="font-mono text-xs mt-1">
-              X: 0.0, Y: 0.0, Z: 0.0
+              X: {selectedPosition[0]}, Y: {selectedPosition[1]}, Z: {selectedPosition[2]}
             </div>
           </div>
           <div>
