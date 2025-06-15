@@ -23,11 +23,21 @@ const defaultParameters: Record<TaskType, any> = {
 
 const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList }) => {
   const addTask = (type: TaskType) => {
+    let description = '';
+    if (type === 'move') {
+      description = `Move to Position (${defaultParameters.move.x}, ${defaultParameters.move.y}, ${defaultParameters.move.z})`;
+    } else if (type === 'grip') {
+      description = `Grip with ${defaultParameters.grip.force} force`;
+    } else if (type === 'release') {
+      description = `Release gripper`;
+    } else if (type === 'wait') {
+      description = `Wait for ${defaultParameters.wait.duration} sec`;
+    }
     const newTask: Task = {
       id: Date.now().toString(),
       type,
       parameters: defaultParameters[type],
-      description: `New ${type} task`
+      description
     };
     setTaskList([...taskList, newTask]);
   };
@@ -100,12 +110,22 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
                       value={value}
                       onChange={(e) => {
                         const newTasks = [...taskList];
+                        const updatedParams = {
+                          ...newTasks[index].parameters,
+                          [key]: Number(e.target.value)
+                        };
+                        let updatedDescription = newTasks[index].description;
+                        if (newTasks[index].type === 'move') {
+                          updatedDescription = `Move to Position (${updatedParams.x}, ${updatedParams.y}, ${updatedParams.z})`;
+                        } else if (newTasks[index].type === 'grip') {
+                          updatedDescription = `Grip with ${updatedParams.force} force`;
+                        } else if (newTasks[index].type === 'wait') {
+                          updatedDescription = `Wait for ${updatedParams.duration} sec`;
+                        }
                         newTasks[index] = {
                           ...newTasks[index],
-                          parameters: {
-                            ...newTasks[index].parameters,
-                            [key]: Number(e.target.value)
-                          }
+                          parameters: updatedParams,
+                          description: updatedDescription
                         };
                         setTaskList(newTasks);
                       }}
