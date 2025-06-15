@@ -10,13 +10,22 @@ interface TaskBlockEditorProps {
   setTaskList: (tasks: Task[]) => void;
 }
 
+type TaskType = 'move' | 'grip' | 'release' | 'wait';
+
+const defaultParameters: Record<TaskType, any> = {
+  move: { x: 0, y: 0, z: 0 },
+  grip: { force: 50 },
+  release: {},
+  wait: { duration: 1 }
+};
+
 const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList }) => {
-  const addTask = () => {
+  const addTask = (type: TaskType) => {
     const newTask: Task = {
       id: Date.now().toString(),
-      type: 'move',
-      parameters: { x: 0, y: 0, z: 0 },
-      description: 'New move task'
+      type,
+      parameters: defaultParameters[type],
+      description: `New ${type} task`
     };
     setTaskList([...taskList, newTask]);
   };
@@ -34,17 +43,15 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
 
   return (
     <div className="space-y-4">
-      {/* Drag and Drop Area */}
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <div className="text-gray-500 mb-4">
-          <Plus className="mx-auto h-12 w-12 mb-2" />
-          <p className="text-lg font-medium">Drag & Drop Interface</p>
-          <p className="text-sm">Coming soon - Full drag and drop functionality</p>
+      {/* Task Block Buttons */}
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+        <p className="text-sm font-medium text-gray-600 mb-2">Add Task Block:</p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Button onClick={() => addTask('move')}>MoveTo</Button>
+          <Button onClick={() => addTask('grip')}>Grip</Button>
+          <Button onClick={() => addTask('release')}>Release</Button>
+          <Button onClick={() => addTask('wait')}>Wait</Button>
         </div>
-        <Button onClick={addTask} className="mt-4">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Task Block
-        </Button>
       </div>
 
       {/* Task List */}
@@ -73,9 +80,23 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
                     <p className="text-sm text-gray-600 mt-1">
                       {task.description}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {JSON.stringify(task.parameters)}
-                    </p>
+                    <div className="mt-2 space-y-1">
+                      {Object.entries(task.parameters).map(([key, value]) => (
+                        <div key={key} className="flex items-center gap-2">
+                          <label className="text-xs text-gray-600 w-20">{key}</label>
+                          <input
+                            className="text-sm px-2 py-1 border rounded w-24"
+                            type="number"
+                            value={value}
+                            onChange={(e) => {
+                              const newTasks = [...taskList];
+                              newTasks[index].parameters[key] = Number(e.target.value);
+                              setTaskList(newTasks);
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <Button
