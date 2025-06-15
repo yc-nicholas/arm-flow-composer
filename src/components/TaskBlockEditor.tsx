@@ -13,15 +13,28 @@ const InputField: React.FC<{
   paramValue: number;
   onChange: (taskIndex: number, key: string, value: number) => void;
 }> = ({ taskIndex, paramKey, paramValue, onChange }) => {
-  const [inputValue, setInputValue] = React.useState<string>(String(paramValue));
+  const [inputValue, setInputValue] = React.useState<string>(
+    ['x', 'y', 'z'].includes(paramKey) ? String(paramValue * 1000) : String(paramValue)
+  );
 
   React.useEffect(() => {
-    setInputValue(String(paramValue));
-  }, [paramValue]);
+    setInputValue(
+      ['x', 'y', 'z'].includes(paramKey) ? String(paramValue * 1000) : String(paramValue)
+    );
+  }, [paramKey, paramValue]);
 
   return (
     <div className="flex items-center gap-2">
-      <label className="text-xs text-gray-600 w-20">{paramKey}</label>
+      <label className="text-xs text-gray-600 w-28">
+        {paramKey}
+        {paramKey === 'x' || paramKey === 'y' || paramKey === 'z'
+          ? ' (mm)'
+          : paramKey === 'force'
+          ? ' (%)'
+          : paramKey === 'duration'
+          ? ' (sec)'
+          : ''}
+      </label>
       <input
         className="text-sm px-2 py-1 border rounded w-24"
         type="number"
@@ -35,7 +48,8 @@ const InputField: React.FC<{
         onBlur={() => {
           const numericValue = Number(inputValue);
           if (!isNaN(numericValue)) {
-            onChange(taskIndex, paramKey, numericValue);
+            const finalValue = ['x', 'y', 'z'].includes(paramKey) ? numericValue / 1000 : numericValue;
+            onChange(taskIndex, paramKey, finalValue);
           }
         }}
         onKeyDown={(e) => {
