@@ -25,9 +25,9 @@ export interface ParamSpec {
 
 export const DESC_FORMAT: Record<string, (p: Record<string, number>) => string> = {
   move: (p) =>
-    `Move to Position (${((p.x ?? 0) * 100).toFixed(1)} cm, ` +
-    `${((p.y ?? 0) * 100).toFixed(1)} cm, ` +
-    `${((p.z ?? 0) * 100).toFixed(1)} cm)`,
+    `Move to Position (${(p.x ?? 0).toFixed(2)} m, ` +
+    `${(p.y ?? 0).toFixed(2)} m, ` +
+    `${(p.z ?? 0).toFixed(2)} m)`,
 
   grip: (p) => `Grip with ${(p.force ?? 0).toFixed(0)}% force`,
 
