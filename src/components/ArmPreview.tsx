@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Task } from '../pages/BuilderPage';
+import { Task } from '@/schemas/taskSchemas';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Canvas } from '@react-three/fiber';

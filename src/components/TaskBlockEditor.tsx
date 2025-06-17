@@ -2,104 +2,40 @@ import React from 'react';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Task } from '../pages/BuilderPage';
+import { Task } from '@/schemas/taskSchemas';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2, Plus, GripVertical } from 'lucide-react';
+import { DESC_FORMAT, getDefaultParams } from '@/schemas/taskSchemas';
+import TaskMove from './tasks/TaskMove';
+import TaskGrip from './tasks/TaskGrip';
+import TaskWait from './tasks/TaskWait';
+import TaskRelease from './tasks/TaskRelease';
 
-const InputField: React.FC<{
-  taskIndex: number;
-  paramKey: string;
-  paramValue: number;
-  onChange: (taskIndex: number, key: string, value: number) => void;
-}> = ({ taskIndex, paramKey, paramValue, onChange }) => {
-  const [inputValue, setInputValue] = React.useState<string>(
-    ['x', 'y', 'z'].includes(paramKey) ? String(paramValue * 1000) : String(paramValue)
-  );
+const TaskComponentMap = {
+  move: TaskMove,
+  grip: TaskGrip,
+  wait: TaskWait,
+  release: TaskRelease,
+} as const;
 
-  React.useEffect(() => {
-    setInputValue(
-      ['x', 'y', 'z'].includes(paramKey) ? String(paramValue * 1000) : String(paramValue)
-    );
-  }, [paramKey, paramValue]);
-
-  return (
-    <div className="flex items-center gap-2">
-      <label className="text-xs text-gray-600 w-28">
-        {paramKey}
-        {paramKey === 'x' || paramKey === 'y' || paramKey === 'z'
-          ? ' (mm)'
-          : paramKey === 'force'
-          ? ' (%)'
-          : paramKey === 'duration'
-          ? ' (sec)'
-          : ''}
-      </label>
-      <input
-        className="text-sm px-2 py-1 border rounded w-24"
-        type="number"
-        step="any"
-        inputMode="decimal"
-        value={inputValue}
-        onChange={(e) => {
-          const value = e.target.value;
-          setInputValue(value);
-        }}
-        onBlur={() => {
-          const numericValue = Number(inputValue);
-          if (!isNaN(numericValue)) {
-            const finalValue = ['x', 'y', 'z'].includes(paramKey) ? numericValue / 1000 : numericValue;
-            onChange(taskIndex, paramKey, finalValue);
-          }
-        }}
-        onKeyDown={(e) => {
-          // Allow characters typically used in numeric input
-          const allowedKeys = [
-            '-', '.', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab',
-          ];
-          if (allowedKeys.includes(e.key) || /^[0-9]$/.test(e.key)) {
-            e.stopPropagation();
-          } else {
-            e.preventDefault();
-          }
-        }}
-        onPointerDown={(e) => e.stopPropagation()}
-      />
-    </div>
-  );
-};
+type TaskType = keyof typeof TaskComponentMap;
 
 interface TaskBlockEditorProps {
   taskList: Task[];
   setTaskList: (tasks: Task[]) => void;
 }
 
-type TaskType = 'move' | 'grip' | 'release' | 'wait';
-
-const defaultParameters: Record<TaskType, Record<string, number>> = {
-  move: { x: 0, y: 0, z: 0 },
-  grip: { force: 50 },
-  release: {},
-  wait: { duration: 1 }
-};
-
 const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList }) => {
   const addTask = (type: TaskType) => {
-    let description = '';
-    if (type === 'move') {
-      description = `Move to Position (${defaultParameters.move.x}, ${defaultParameters.move.y}, ${defaultParameters.move.z})`;
-    } else if (type === 'grip') {
-      description = `Grip with ${defaultParameters.grip.force} force`;
-    } else if (type === 'release') {
-      description = `Release gripper`;
-    } else if (type === 'wait') {
-      description = `Wait for ${defaultParameters.wait.duration} sec`;
-    }
+    const params = getDefaultParams(type);              // deep-clone defaults
+    const description = DESC_FORMAT[type](params);      // build first sentence
+  
     const newTask: Task = {
       id: Date.now().toString(),
       type,
-      parameters: defaultParameters[type],
-      description
+      parameters: params,
+      description,
     };
     setTaskList([...taskList, newTask]);
   };
@@ -115,7 +51,9 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
     wait: 'bg-yellow-100 border-yellow-300'
   };
 
-
+  const updateTask = (newTask: Task) => {
+    setTaskList(prev => prev.map(t => (t.id === newTask.id ? newTask : t)));
+  };
 
   // Drag-and-drop logic
   const handleDragEnd = (event: DragEndEvent) => {
@@ -126,39 +64,6 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
       const newIndex = taskList.findIndex(t => t.id === over.id);
       setTaskList(arrayMove(taskList, oldIndex, newIndex));
     }
-  };
-
-  const handleParameterChange = (
-    taskIndex: number,
-    key: string,
-    value: number
-  ) => {
-    const newTasks = [...taskList];
-    const updatedParams = {
-      ...newTasks[taskIndex].parameters,
-      [key]: value
-    };
-    let updatedDescription = '';
-    switch (newTasks[taskIndex].type) {
-      case 'move':
-        updatedDescription = `Move to Position (${updatedParams.x}, ${updatedParams.y}, ${updatedParams.z})`;
-        break;
-      case 'grip':
-        updatedDescription = `Grip with ${updatedParams.force} force`;
-        break;
-      case 'wait':
-        updatedDescription = `Wait for ${updatedParams.duration} sec`;
-        break;
-      case 'release':
-        updatedDescription = 'Release gripper';
-        break;
-    }
-    newTasks[taskIndex] = {
-      ...newTasks[taskIndex],
-      parameters: updatedParams,
-      description: updatedDescription
-    };
-    setTaskList(newTasks);
   };
 
   // Sortable Task Card
@@ -198,17 +103,12 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
                 {task.description}
               </p>
               <div className="mt-2 space-y-1">
-                {Object.entries(task.parameters).map(([key, value]) => {
+                {(() => {
+                  const Comp = TaskComponentMap[task.type as TaskType];
                   return (
-                    <InputField
-                      key={key}
-                      taskIndex={index}
-                      paramKey={key}
-                      paramValue={value}
-                      onChange={handleParameterChange}
-                    />
+                    <Comp task={task} onUpdate={updateTask} />
                   );
-                })}
+                })()}
               </div>
             </div>
           </div>
@@ -235,10 +135,11 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
         <p className="text-sm font-medium text-gray-600 mb-2">Add Task Block:</p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Button onClick={() => addTask('move')}>MoveTo</Button>
-          <Button onClick={() => addTask('grip')}>Grip</Button>
-          <Button onClick={() => addTask('release')}>Release</Button>
-          <Button onClick={() => addTask('wait')}>Wait</Button>
+          {Object.keys(TaskComponentMap).map((type) => (
+            <Button key={type} onClick={() => addTask(type as TaskType)}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </Button>
+          ))}
         </div>
       </div>
 

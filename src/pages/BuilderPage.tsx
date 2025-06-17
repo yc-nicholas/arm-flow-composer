@@ -1,29 +1,24 @@
 
 import React, { useState } from 'react';
+import { getDefaultParams, DESC_FORMAT } from '@/schemas/taskSchemas';
 import TaskBlockEditor from '../components/TaskBlockEditor';
 import ArmPreview from '../components/ArmPreview';
 import ExportModal from '../components/ExportModal';
-
-export interface Task {
-  id: string;
-  type: string;
-  parameters: Record<string, any>;
-  description: string;
-}
+import { Task } from '@/schemas/taskSchemas';
 
 const BuilderPage = () => {
   const [taskList, setTaskList] = useState<Task[]>([
     {
       id: '1',
       type: 'move',
-      parameters: { x: 1, y: 3, z: 2 },
-      description: 'Move to position (1, 3, 2)'
+      parameters: getDefaultParams('move'),
+      description: DESC_FORMAT.move(getDefaultParams('move'))
     },
     {
       id: '2',
       type: 'grip',
-      parameters: { force: 50 },
-      description: 'Grip with 50% force'
+      parameters: getDefaultParams('grip'),
+      description: DESC_FORMAT.grip(getDefaultParams('grip'))
     }
   ]);
 
