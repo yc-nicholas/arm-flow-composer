@@ -4,13 +4,7 @@ import { getDefaultParams, DESC_FORMAT } from '@/schemas/taskSchemas';
 import TaskBlockEditor from '../components/TaskBlockEditor';
 import ArmPreview from '../components/ArmPreview';
 import ExportModal from '../components/ExportModal';
-
-export interface Task {
-  id: string;
-  type: string;
-  parameters: Record<string, any>;
-  description: string;
-}
+import { Task } from '@/schemas/taskSchemas';
 
 const BuilderPage = () => {
   const [taskList, setTaskList] = useState<Task[]>([
