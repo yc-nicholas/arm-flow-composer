@@ -15,6 +15,11 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
 
   const meshRef = useRef<THREE.Mesh>(null);
 
+  const toThreeJsCoords = (params: any): [number, number, number] => {
+    const { x = 0, y = 0, z = 0 } = params;
+    return [x, z, y]; // map Z to vertical (Y in three.js), Y to depth (Z in three.js)
+  };
+
   useEffect(() => {
     if (meshRef.current) {
       meshRef.current.position.set(...selectedPosition);
@@ -50,8 +55,7 @@ const ArmPreview: React.FC<ArmPreviewProps> = ({ taskList }) => {
                 key={task.id}
                 onClick={() => {
                   if (task.type === 'move' && task.parameters) {
-                    const { x, y, z } = task.parameters;
-                    setSelectedPosition([x || 0, y || 0, z || 0]);
+                    setSelectedPosition(toThreeJsCoords(task.parameters));
                   }
                 }}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition"
