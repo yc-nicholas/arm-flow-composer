@@ -1,6 +1,6 @@
 import React from 'react';
-import { Task } from '../../pages/BuilderPage';
-import { TASK_SCHEMAS, DESC_FORMAT } from '@/schemas/taskSchemas';
+import { Task,TASK_SCHEMAS } from '@/schemas/taskSchemas';
+import { DESC_FORMAT } from './UIConfig';
 
 const MOVE_SCHEMA = TASK_SCHEMAS.move;
 type Axis = keyof typeof MOVE_SCHEMA;  // 'x' | 'y' | 'z'

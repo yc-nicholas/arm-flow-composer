@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { getDefaultParams, DESC_FORMAT } from '@/schemas/taskSchemas';
 import TaskBlockEditor from '../components/TaskBlockEditor';
 import ArmPreview from '../components/ArmPreview';
 import ExportModal from '../components/ExportModal';
 import { Task } from '@/schemas/taskSchemas';
+import { DESC_FORMAT, getDefaultParams } from '@/components/tasks/UIConfig';
 
 const BuilderPage = () => {
   const [taskList, setTaskList] = useState<Task[]>([

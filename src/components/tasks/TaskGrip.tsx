@@ -1,6 +1,6 @@
 import React from 'react';
-import { Task } from '../../pages/BuilderPage';
-import { DESC_FORMAT } from '@/schemas/taskSchemas';
+import { Task } from '@/schemas/taskSchemas';
+import { DESC_FORMAT } from './UIConfig';
 
 interface TaskCompProps {
     task: Task;

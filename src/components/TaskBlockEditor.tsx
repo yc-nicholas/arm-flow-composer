@@ -6,18 +6,7 @@ import { Task } from '@/schemas/taskSchemas';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2, Plus, GripVertical } from 'lucide-react';
-import { DESC_FORMAT, getDefaultParams } from '@/schemas/taskSchemas';
-import TaskMove from './tasks/TaskMove';
-import TaskGrip from './tasks/TaskGrip';
-import TaskWait from './tasks/TaskWait';
-import TaskRelease from './tasks/TaskRelease';
-
-const TaskComponentMap = {
-  move: TaskMove,
-  grip: TaskGrip,
-  wait: TaskWait,
-  release: TaskRelease,
-} as const;
+import { DESC_FORMAT, getDefaultParams, TaskComponentMap } from '@/components/tasks/UIConfig';
 
 type TaskType = keyof typeof TaskComponentMap;
 
