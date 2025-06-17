@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Task } from '@/schemas/taskSchemas';
+import { Task } from '@/interfaces/Task';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";

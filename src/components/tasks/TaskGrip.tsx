@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/schemas/taskSchemas';
+import { Task } from '@/interfaces/Task';
 import { DESC_FORMAT } from './UIConfig';
 
 interface TaskCompProps {

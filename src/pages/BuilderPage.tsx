@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import TaskBlockEditor from '../components/TaskBlockEditor';
 import ArmPreview from '../components/ArmPreview';
 import ExportModal from '../components/ExportModal';
-import { Task } from '@/schemas/taskSchemas';
+import { Task } from '@/interfaces/Task';
 import { DESC_FORMAT, getDefaultParams } from '@/components/tasks/UIConfig';
 
 const BuilderPage = () => {

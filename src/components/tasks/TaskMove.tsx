@@ -1,5 +1,6 @@
 import React from 'react';
-import { Task,TASK_SCHEMAS } from '@/schemas/taskSchemas';
+import { Task } from '@/interfaces/Task';
+import { TASK_SCHEMAS } from '@/schemas/taskSchemas';
 import { DESC_FORMAT } from './UIConfig';
 
 const MOVE_SCHEMA = TASK_SCHEMAS.move;
