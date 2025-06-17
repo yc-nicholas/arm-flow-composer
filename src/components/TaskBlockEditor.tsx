@@ -6,6 +6,7 @@ import { Task } from '../pages/BuilderPage';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2, Plus, GripVertical } from 'lucide-react';
+import { DESC_FORMAT, getDefaultParams } from '@/schemas/taskSchemas';
 
 const InputField: React.FC<{
   taskIndex: number;
@@ -76,30 +77,17 @@ interface TaskBlockEditorProps {
 
 type TaskType = 'move' | 'grip' | 'release' | 'wait';
 
-const defaultParameters: Record<TaskType, Record<string, number>> = {
-  move: { x: 0, y: 0, z: 0 },
-  grip: { force: 50 },
-  release: {},
-  wait: { duration: 1 }
-};
 
 const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList }) => {
   const addTask = (type: TaskType) => {
-    let description = '';
-    if (type === 'move') {
-      description = `Move to Position (${defaultParameters.move.x}, ${defaultParameters.move.y}, ${defaultParameters.move.z})`;
-    } else if (type === 'grip') {
-      description = `Grip with ${defaultParameters.grip.force} force`;
-    } else if (type === 'release') {
-      description = `Release gripper`;
-    } else if (type === 'wait') {
-      description = `Wait for ${defaultParameters.wait.duration} sec`;
-    }
+    const params = getDefaultParams(type);              // deep-clone defaults
+    const description = DESC_FORMAT[type](params);      // build first sentence
+  
     const newTask: Task = {
       id: Date.now().toString(),
       type,
-      parameters: defaultParameters[type],
-      description
+      parameters: params,
+      description,
     };
     setTaskList([...taskList, newTask]);
   };
@@ -133,32 +121,14 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
     key: string,
     value: number
   ) => {
-    const newTasks = [...taskList];
-    const updatedParams = {
-      ...newTasks[taskIndex].parameters,
-      [key]: value
-    };
-    let updatedDescription = '';
-    switch (newTasks[taskIndex].type) {
-      case 'move':
-        updatedDescription = `Move to Position (${updatedParams.x}, ${updatedParams.y}, ${updatedParams.z})`;
-        break;
-      case 'grip':
-        updatedDescription = `Grip with ${updatedParams.force} force`;
-        break;
-      case 'wait':
-        updatedDescription = `Wait for ${updatedParams.duration} sec`;
-        break;
-      case 'release':
-        updatedDescription = 'Release gripper';
-        break;
-    }
-    newTasks[taskIndex] = {
-      ...newTasks[taskIndex],
-      parameters: updatedParams,
-      description: updatedDescription
-    };
-    setTaskList(newTasks);
+    const updatedTasks = [...taskList];
+    const t = updatedTasks[taskIndex];
+  
+    const newParams = { ...t.parameters, [key]: value };
+    const newDesc   = DESC_FORMAT[t.type](newParams);
+  
+    updatedTasks[taskIndex] = { ...t, parameters: newParams, description: newDesc };
+    setTaskList(updatedTasks);
   };
 
   // Sortable Task Card
