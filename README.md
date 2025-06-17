@@ -23,18 +23,37 @@ src/
 ├── components/
 │   ├── ArmPreview.tsx
 │   ├── TaskBlockEditor.tsx
+│   ├── ExportModal.tsx
 │   ├── tasks/
 │   │   ├── TaskMove.tsx
 │   │   ├── TaskGrip.tsx
 │   │   ├── TaskRelease.tsx
-│   │   └── TaskWait.tsx
-│   └── ExportModal.tsx
+│   │   ├── TaskWait.tsx
+│   │   └── UIConfig.ts
+├── interfaces/
+│   └── Task.ts
 ├── schemas/
 │   └── taskSchemas.ts
 ├── views/
 │   └── BuilderPage.tsx
 └── App.tsx
 ```
+
+---
+
+## 🛠 Developer Note: Adding a New Task
+
+To add a new task type (e.g. `rotate`):
+
+1. **Create Component**  
+   Add `TaskRotate.tsx` in `components/tasks/`.
+
+2. **Update Task Configs**  
+   Register the task in:
+   - `taskSchemas.ts`: define default parameters and description format
+   - `UIConfig.ts`: map type to component and label
+
+This structure follows SOLID principles—especially open/closed—and keeps task logic modular.
 
 ---
 
@@ -123,4 +142,3 @@ Planned endpoints:
 The 3D preview of the robotic arm assumes that the coordinate origin (0, 0, 0) is located at the center of the arm's base. All task positions (e.g., MoveTo) are interpreted relative to this central origin point. This helps standardize the preview behavior and ensures that the arm's movement is consistent across different task sequences.
 
 ---
-
