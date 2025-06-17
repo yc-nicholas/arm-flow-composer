@@ -8,7 +8,7 @@ A fun browser-based app to create and simulate robotic arm tasks—no coding or 
 
 ---
 
-## Frontend (React + Blockly + SVG + Three.js)
+## Frontend (React + Blockly + Three.js)
 
 ### Features
 - Drag-and-drop task block builder (Blockly)
@@ -88,7 +88,7 @@ Planned endpoints:
 ---
 
 ## Tech Stack Summary
-- **Frontend**: React, TypeScript, Blockly, SVG, Three.js, Tailwind or MUI
+- **Frontend**: React, TypeScript, Blockly, Three.js, Tailwind or MUI
 - **DevOps**: GitHub Actions, Pre-commit
 
 ---
@@ -118,5 +118,9 @@ Planned endpoints:
 
 ---
 
-## README Callout
-> This project is a fun exploration of building a no-code robotics interface for arm manipulators—mixing drag-and-drop coding, 3D animation, and a bit of creative tinkering around robot task design.
+## Coordinate System Assumption
+
+The 3D preview of the robotic arm assumes that the coordinate origin (0, 0, 0) is located at the center of the arm's base. All task positions (e.g., MoveTo) are interpreted relative to this central origin point. This helps standardize the preview behavior and ensures that the arm's movement is consistent across different task sequences.
+
+---
+
