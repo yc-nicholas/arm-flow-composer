@@ -19,7 +19,7 @@ const TaskComponentMap = {
   release: TaskRelease,
 } as const;
 
-type TaskType = 'move' | 'grip' | 'release' | 'wait';
+type TaskType = keyof typeof TaskComponentMap;
 
 interface TaskBlockEditorProps {
   taskList: Task[];
@@ -135,10 +135,11 @@ const TaskBlockEditor: React.FC<TaskBlockEditorProps> = ({ taskList, setTaskList
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
         <p className="text-sm font-medium text-gray-600 mb-2">Add Task Block:</p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Button onClick={() => addTask('move')}>MoveTo</Button>
-          <Button onClick={() => addTask('grip')}>Grip</Button>
-          <Button onClick={() => addTask('release')}>Release</Button>
-          <Button onClick={() => addTask('wait')}>Wait</Button>
+          {Object.keys(TaskComponentMap).map((type) => (
+            <Button key={type} onClick={() => addTask(type as TaskType)}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </Button>
+          ))}
         </div>
       </div>
 
