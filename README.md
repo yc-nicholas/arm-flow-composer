@@ -12,7 +12,7 @@ A fun browser-based app to create and simulate robotic arm tasks—no coding or 
 
 ### Features
 - Drag-and-drop task block builder (Blockly)
-- Configurable parameters: x/y/z, grip force, duration
+- Editable task parameters with validation and unit conversion (e.g., cm → m)
 - Animated robotic arm preview (3D via Three.js)
 - Export JSON: users can download the task list as a .json file
 
@@ -23,7 +23,14 @@ src/
 ├── components/
 │   ├── ArmPreview.tsx
 │   ├── TaskBlockEditor.tsx
+│   ├── tasks/
+│   │   ├── TaskMove.tsx
+│   │   ├── TaskGrip.tsx
+│   │   ├── TaskRelease.tsx
+│   │   └── TaskWait.tsx
 │   └── ExportModal.tsx
+├── schemas/
+│   └── taskSchemas.ts
 ├── views/
 │   └── BuilderPage.tsx
 └── App.tsx
