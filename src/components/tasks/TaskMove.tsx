@@ -55,7 +55,12 @@ const TaskMove: React.FC<TaskCompProps> = ({ task, onUpdate }) => {
           max={spec.max}
           step={step}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            const next = e.target.value;
+            if (/^-?\d*\.?\d*$/.test(next)) {
+              setDraft(next);
+            }
+          }}
           onBlur={commit}
           onKeyDown={(e) => {
             if (e.key === 'Enter') commit();

@@ -32,7 +32,12 @@ const TaskGrip: React.FC<TaskCompProps> = ({ task, onUpdate }) => {
           max={100}
           step={1}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            const next = e.target.value;
+            if (/^-?\d*\.?\d*$/.test(next)) {
+              setDraft(next);
+            }
+          }}
           onBlur={() => handleCommit(parseFloat(draft))}
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleCommit(parseFloat(draft));
